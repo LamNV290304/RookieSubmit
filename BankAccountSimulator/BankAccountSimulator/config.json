@@ -1,0 +1,5 @@
+{
+  "MinimumBalanceAfterWithdrawal": 100,
+  "DailyWithdrawalLimit": 2000,
+  "MonthlyInterestRate": 0.05
+}

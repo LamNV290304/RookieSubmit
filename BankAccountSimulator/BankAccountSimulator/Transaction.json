@@ -1,0 +1,50 @@
+[
+  {
+    "TransactionId": 1,
+    "AccountNumber": "1100",
+    "Type": 0,
+    "Amount": 5000,
+    "Date": "2026-04-09T01:21:26.929603+07:00",
+    "Description": "Deposit successful"
+  },
+  {
+    "TransactionId": 2,
+    "AccountNumber": "1100",
+    "Type": 1,
+    "Amount": 1000,
+    "Date": "2026-04-09T01:21:46.9155594+07:00",
+    "Description": "Withdrawal successful"
+  },
+  {
+    "TransactionId": 3,
+    "AccountNumber": "1100",
+    "Type": 2,
+    "Amount": 2000,
+    "Date": "2026-04-09T01:21:58.5310237+07:00",
+    "Description": "Transfer Out to 1001"
+  },
+  {
+    "TransactionId": 4,
+    "AccountNumber": "1001",
+    "Type": 3,
+    "Amount": 2000,
+    "Date": "2026-04-09T01:21:58.5313522+07:00",
+    "Description": "Transfer In from 1100"
+  },
+  {
+    "TransactionId": 5,
+    "AccountNumber": "1100",
+    "Type": 2,
+    "Amount": 100,
+    "Date": "2026-04-09T01:22:31.6770607+07:00",
+    "Description": "Transfer Out to 1002"
+  },
+  {
+    "TransactionId": 6,
+    "AccountNumber": "1002",
+    "Type": 3,
+    "Amount": 100,
+    "Date": "2026-04-09T01:22:31.6773919+07:00",
+    "Description": "Transfer In from 1100"
+  }
+]
