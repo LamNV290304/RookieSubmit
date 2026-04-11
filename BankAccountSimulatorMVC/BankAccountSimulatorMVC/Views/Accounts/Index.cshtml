@@ -1,0 +1,77 @@
+@model IReadOnlyList<BankAccount>
+
+@{
+    ViewData["Title"] = "Accounts";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Bank Accounts</h4>
+        <a asp-action="Create" class="btn btn-primary">Create New Account</a>
+    </div>
+    <div class="table-responsive text-nowrap">
+        <table class="table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>Account Number</th>
+                    <th>Owner</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-4">No accounts found.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var account in Model)
+                    {
+                        <tr>
+                            <td>@account.AccountNumber</td>
+                            <td>@account.OwnerName</td>
+                            <td>@account.Balance.ToString("C")</td>
+                            <td>
+                                @if (account.Status == AccountStatus.Active)
+                                {
+                                    <span class="badge bg-label-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-label-warning">Frozen</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-accountNumber="@account.AccountNumber">Details</a>
+                                    <a class="btn btn-sm btn-outline-info" asp-controller="Transactions" asp-action="History" asp-route-accountNumber="@account.AccountNumber">History</a>
+
+                                    @if (account.Status == AccountStatus.Active)
+                                    {
+                                        <form asp-action="Freeze" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="accountNumber" value="@account.AccountNumber" />
+                                            <button type="submit" class="btn btn-sm btn-outline-warning">Freeze</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Unfreeze" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="accountNumber" value="@account.AccountNumber" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Unfreeze</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

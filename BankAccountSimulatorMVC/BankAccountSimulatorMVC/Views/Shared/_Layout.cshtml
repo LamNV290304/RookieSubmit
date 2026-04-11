@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Bank Account Simulation</title>
+    <link rel="stylesheet" href="~/assets/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="~/assets/vendor/css/core.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/assets/vendor/css/theme-default.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/assets/css/demo.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BankAccountSimulatorMVC.styles.css" asp-append-version="true" />
+    <script src="~/assets/vendor/js/helpers.js" asp-append-version="true"></script>
+    <script src="~/assets/js/config.js" asp-append-version="true"></script>
+</head>
+<body class="bg-light">
+    <header class="layout-navbar navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme">
+        <div class="container-xxl">
+            <a class="navbar-brand fw-bold" asp-controller="Accounts" asp-action="Index">Bank Account Simulation</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-2">
+                        <a class="btn btn-outline-primary btn-sm" asp-controller="Accounts" asp-action="Index">Accounts</a>
+                    </li>
+                    <li class="nav-item me-2">
+                        <a class="btn btn-outline-success btn-sm" asp-controller="Accounts" asp-action="Create">Create Account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-info btn-sm" asp-controller="Transactions" asp-action="History">Transactions</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-xxl mt-4 mb-5">
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <div class="alert alert-success" role="alert">@successMessage</div>
+        }
+        @if (TempData["ErrorMessage"] is string errorMessage)
+        {
+            <div class="alert alert-danger" role="alert">@errorMessage</div>
+        }
+
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/assets/vendor/libs/jquery/jquery.js" asp-append-version="true"></script>
+    <script src="~/assets/vendor/libs/popper/popper.js" asp-append-version="true"></script>
+    <script src="~/assets/vendor/js/bootstrap.js" asp-append-version="true"></script>
+    <script src="~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js" asp-append-version="true"></script>
+    <script src="~/assets/vendor/js/menu.js" asp-append-version="true"></script>
+    <script src="~/assets/js/main.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
