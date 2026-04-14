@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="BankAccountSimulatorMVC/BankAccountSimulatorMVC.csproj" />
+  <Project Path="Domain/Domain.csproj" Id="41567fd2-dfa4-4a41-bacc-e2d63eccc513" />
+  <Project Path="Infrastructure/Infrastructure.csproj" Id="2186ac54-a590-4524-8b5a-4dad068f00df" />
 </Solution>

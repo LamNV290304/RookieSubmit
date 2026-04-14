@@ -1,136 +1,114 @@
-using BankAccountSimulatorMVC.Models;
-using BankAccountSimulatorMVC.Models.ViewModels;
+using Domain.Models;
 using BankAccountSimulatorMVC.Services;
+using BankAccountSimulatorMVC.ViewModels;
 using BankAccountSimulatorMVC.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BankAccountSimulatorMVC.Controllers
+namespace BankAccountSimulatorMVC.Controllers;
+
+public class AccountsController(IBankAccountService bankAccountService) : Controller
 {
-    public class AccountsController : Controller
+    private const int DefaultPageSize = 10;
+    private const int MaxPageSize = 100;
+
+    [HttpGet]
+    public async Task<IActionResult> Index(int page = 1, int pageSize = DefaultPageSize)
     {
-        private readonly IBankAccountService _bankAccountService;
+        var accounts = await bankAccountService.GetAllAsync();
 
-        public AccountsController(IBankAccountService bankAccountService)
+        var normalizedPageSize = pageSize <= 0 ? DefaultPageSize : Math.Min(pageSize, MaxPageSize);
+        var totalItems = accounts.Count;
+        var totalPages = totalItems <= 0 ? 1 : (int)Math.Ceiling(totalItems / (double)normalizedPageSize);
+        var normalizedPage = page <= 0 ? 1 : Math.Min(page, totalPages);
+
+        var pagedAccounts = accounts
+            .Skip((normalizedPage - 1) * normalizedPageSize)
+            .Take(normalizedPageSize)
+            .ToList();
+
+        var viewModel = new AccountsIndexViewModel
         {
-            _bankAccountService = bankAccountService;
+            Accounts = pagedAccounts,
+            CurrentPage = normalizedPage,
+            PageSize = normalizedPageSize,
+            TotalItems = totalItems
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View(new CreateAccountViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CreateAccountViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var account = new BankAccount
+        {
+            AccountNumber = model.AccountNumber,
+            OwnerName = model.OwnerName,
+            Balance = model.InitialBalance
+        };
+
+        var result = await bankAccountService.CreateAsync(account);
+        if (!result.Success)
+        {
+            ModelState.AddModelError(string.Empty, result.Message ?? "Could not create account.");
+            return View(model);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        TempData["SuccessMessage"] = result.Message;
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Details(string accountNumber)
+    {
+        if (string.IsNullOrWhiteSpace(accountNumber)) return NotFound();
+
+        var account = await bankAccountService.GetByAccountNumberAsync(accountNumber);
+        if (account is null) return NotFound();
+
+        return View(account);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Freeze(string accountNumber, int page = 1, int pageSize = DefaultPageSize)
+    {
+        if (string.IsNullOrWhiteSpace(accountNumber))
         {
-            try
-            {
-                var accounts = await _bankAccountService.GetAllAsync();
-                return View(accounts);
-            }
-            catch (DataStoreException)
-            {
-                TempData["ErrorMessage"] = "Cannot read account data right now. Please try again later.";
-                return View(new List<BankAccount>());
-            }
+            TempData["ErrorMessage"] = "Account number is required.";
+            return RedirectToAction(nameof(Index), new { page, pageSize });
         }
 
-        [HttpGet]
-        public IActionResult Create()
+        var result = await bankAccountService.FreezeAsync(accountNumber);
+        return RedirectToIndexWithResult(result, page, pageSize);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Unfreeze(string accountNumber, int page = 1, int pageSize = DefaultPageSize)
+    {
+        if (string.IsNullOrWhiteSpace(accountNumber))
         {
-            return View(new CreateAccountViewModel());
+            TempData["ErrorMessage"] = "Account number is required.";
+            return RedirectToAction(nameof(Index), new { page, pageSize });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateAccountViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
+        var result = await bankAccountService.UnfreezeAsync(accountNumber);
+        return RedirectToIndexWithResult(result, page, pageSize);
+    }
 
-            try
-            {
-                var account = new BankAccount
-                {
-                    AccountNumber = model.AccountNumber,
-                    OwnerName = model.OwnerName,
-                    Balance = model.InitialBalance
-                };
-
-                var result = await _bankAccountService.CreateAsync(account);
-                if (!result.Success)
-                {
-                    ModelState.AddModelError(string.Empty, result.Message ?? "Could not create account.");
-                    return View(model);
-                }
-
-                TempData["SuccessMessage"] = result.Message;
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DataStoreException)
-            {
-                ModelState.AddModelError(string.Empty, "Cannot save account data right now. Please try again later.");
-                return View(model);
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Details(string accountNumber)
-        {
-            if (string.IsNullOrWhiteSpace(accountNumber)) return NotFound();
-
-            try
-            {
-                var account = await _bankAccountService.GetByAccountNumberAsync(accountNumber);
-                if (account is null) return NotFound();
-
-                return View(account);
-            }
-            catch (DataStoreException)
-            {
-                TempData["ErrorMessage"] = "Cannot read account details right now. Please try again later.";
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Freeze(string accountNumber)
-        {
-            if (string.IsNullOrWhiteSpace(accountNumber))
-            {
-                TempData["ErrorMessage"] = "Account number is required.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            try
-            {
-                var result = await _bankAccountService.FreezeAsync(accountNumber);
-                TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DataStoreException)
-            {
-                TempData["ErrorMessage"] = "Cannot update account status right now. Please try again later.";
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Unfreeze(string accountNumber)
-        {
-            if (string.IsNullOrWhiteSpace(accountNumber))
-            {
-                TempData["ErrorMessage"] = "Account number is required.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            try
-            {
-                var result = await _bankAccountService.UnfreezeAsync(accountNumber);
-                TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DataStoreException)
-            {
-                TempData["ErrorMessage"] = "Cannot update account status right now. Please try again later.";
-                return RedirectToAction(nameof(Index));
-            }
-        }
+    private IActionResult RedirectToIndexWithResult(ServiceResult result, int page = 1, int pageSize = DefaultPageSize)
+    {
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(Index), new { page, pageSize });
     }
 }

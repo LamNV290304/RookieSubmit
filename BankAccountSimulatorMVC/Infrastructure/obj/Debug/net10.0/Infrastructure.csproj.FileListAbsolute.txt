@@ -1,0 +1,17 @@
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\bin\Debug\net10.0\Infrastructure.deps.json
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\bin\Debug\net10.0\Infrastructure.dll
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\bin\Debug\net10.0\Infrastructure.pdb
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\bin\Debug\net10.0\Domain.dll
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\bin\Debug\net10.0\Domain.pdb
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\Infrastructure.csproj.AssemblyReference.cache
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\Infrastructure.AssemblyInfoInputs.cache
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\Infrastructure.AssemblyInfo.cs
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\Infrastructure.csproj.CoreCompileInputs.cache
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\Infrastr.15EFFBFE.Up2Date
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\Infrastructure.dll
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\refint\Infrastructure.dll
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\Infrastructure.pdb
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\ref\Infrastructure.dll
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\bin\Debug\net10.0\Infrastructure.runtimeconfig.json
+D:\Dotnet Project\BankAccountSimulatorMVC\Infrastructure\obj\Debug\net10.0\Infrastructure.genruntimeconfig.cache

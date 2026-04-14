@@ -1,74 +1,72 @@
-using BankAccountSimulatorMVC.Models;
+using Domain.Models;
+using BankAccountSimulatorMVC.Interfaces;
 using BankAccountSimulatorMVC.Services.Interface;
 
-namespace BankAccountSimulatorMVC.Services
+namespace BankAccountSimulatorMVC.Services;
+
+public class BankAccountService(IUnitOfWork unitOfWork) : IBankAccountService
 {
-    public class BankAccountService : IBankAccountService
+    public async Task<ServiceResult> CreateAsync(BankAccount account)
     {
-        private readonly JsonBankDataStore _dataStore;
+        if (string.IsNullOrWhiteSpace(account.AccountNumber)) return ServiceResult.Fail("Account number is required.");
 
-        public BankAccountService(JsonBankDataStore dataStore)
-        {
-            _dataStore = dataStore;
-        }
+        var normalizedAccountNumber = account.AccountNumber.Trim();
+        var existing = await unitOfWork.BankAccounts.GetByAccountNumberAsync(normalizedAccountNumber);
+        if (existing is not null) return ServiceResult.Fail("Account number already exists.");
 
-        public async Task<IReadOnlyList<BankAccount>> GetAllAsync()
-        {
-            var accounts = await _dataStore.ReadAccountsAsync();
-            return accounts
-                .OrderBy(a => a.AccountNumber)
-                .ToList();
-        }
+        account.AccountNumber = normalizedAccountNumber;
 
-        public async Task<BankAccount?> GetByAccountNumberAsync(string accountNumber)
-        {
-            var accounts = await _dataStore.ReadAccountsAsync();
-            return accounts.FirstOrDefault(a => a.AccountNumber.Equals(accountNumber, StringComparison.OrdinalIgnoreCase));
-        }
+        await unitOfWork.BankAccounts.AddAsync(account);
+        await unitOfWork.SaveChangesAsync();
 
-        public async Task<ServiceResult> CreateAsync(BankAccount account)
-        {
-            var accountNumber = account.AccountNumber.Trim();
-            var ownerName = account.OwnerName.Trim();
+        return ServiceResult.Ok("Account created successfully.");
+    }
 
-            if (string.IsNullOrWhiteSpace(accountNumber)) return ServiceResult.Fail("Account number is required.");
-            if (string.IsNullOrWhiteSpace(ownerName)) return ServiceResult.Fail("Owner name is required.");
-            if (account.Balance < 0) return ServiceResult.Fail("Initial balance must be 0 or greater.");
+    public Task<IReadOnlyList<BankAccount>> GetAllAsync()
+    {
+        return unitOfWork.BankAccounts.GetAllAsync();
+    }
 
-            var accounts = await _dataStore.ReadAccountsAsync();
-            if (accounts.Any(a => a.AccountNumber.Equals(accountNumber, StringComparison.OrdinalIgnoreCase))) return ServiceResult.Fail("Account number already exists.");
+    public Task<BankAccount?> GetByAccountNumberAsync(string accountNumber)
+    {
+        return unitOfWork.BankAccounts.GetByAccountNumberAsync(accountNumber);
+    }
 
-            account.AccountNumber = accountNumber;
-            account.OwnerName = ownerName;
-            account.Status = AccountStatus.Active;
-            account.CreatedAt = DateTime.Now;
+    public Task<ServiceResult> FreezeAsync(string accountNumber)
+    {
+        return UpdateAccountStatusAsync(
+            accountNumber,
+            AccountStatus.Frozen,
+            "Account is already frozen.",
+            "Account frozen successfully.");
+    }
 
-            accounts.Add(account);
-            await _dataStore.WriteAccountsAsync(accounts);
+    public Task<ServiceResult> UnfreezeAsync(string accountNumber)
+    {
+        return UpdateAccountStatusAsync(
+            accountNumber,
+            AccountStatus.Active,
+            "Account is already active.",
+            "Account unfrozen successfully.");
+    }
 
-            return ServiceResult.Ok("Account created successfully.");
-        }
+    private async Task<ServiceResult> UpdateAccountStatusAsync(
+        string accountNumber,
+        AccountStatus targetStatus,
+        string alreadyInStatusMessage,
+        string successMessage)
+    {
+        if (string.IsNullOrWhiteSpace(accountNumber)) return ServiceResult.Fail("Account number is required.");
 
-        public async Task<ServiceResult> FreezeAsync(string accountNumber)
-        {
-            return await SetAccountStatusAsync(accountNumber, AccountStatus.Frozen, "Account frozen.");
-        }
+        var normalizedAccountNumber = accountNumber.Trim();
+        var account = await unitOfWork.BankAccounts.GetByAccountNumberAsync(normalizedAccountNumber);
+        if (account is null) return ServiceResult.Fail("Account not found.");
 
-        public async Task<ServiceResult> UnfreezeAsync(string accountNumber)
-        {
-            return await SetAccountStatusAsync(accountNumber, AccountStatus.Active, "Account unfrozen.");
-        }
+        if (account.Status == targetStatus) return ServiceResult.Fail(alreadyInStatusMessage);
 
-        private async Task<ServiceResult> SetAccountStatusAsync(string accountNumber, AccountStatus status, string successMessage)
-        {
-            var accounts = await _dataStore.ReadAccountsAsync();
-            var account = accounts.FirstOrDefault(a => a.AccountNumber.Equals(accountNumber, StringComparison.OrdinalIgnoreCase));
-            if (account is null) return ServiceResult.Fail("Account not found.");
+        account.Status = targetStatus;
+        await unitOfWork.SaveChangesAsync();
 
-            account.Status = status;
-            await _dataStore.WriteAccountsAsync(accounts);
-
-            return ServiceResult.Ok(successMessage);
-        }
+        return ServiceResult.Ok(successMessage);
     }
 }

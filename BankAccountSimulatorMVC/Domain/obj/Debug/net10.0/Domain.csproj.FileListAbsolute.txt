@@ -1,0 +1,11 @@
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\bin\Debug\net10.0\Domain.deps.json
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\bin\Debug\net10.0\Domain.dll
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\bin\Debug\net10.0\Domain.pdb
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\obj\Debug\net10.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\obj\Debug\net10.0\Domain.AssemblyInfoInputs.cache
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\obj\Debug\net10.0\Domain.AssemblyInfo.cs
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\obj\Debug\net10.0\Domain.csproj.CoreCompileInputs.cache
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\obj\Debug\net10.0\Domain.dll
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\obj\Debug\net10.0\refint\Domain.dll
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\obj\Debug\net10.0\Domain.pdb
+D:\Dotnet Project\BankAccountSimulatorMVC\Domain\obj\Debug\net10.0\ref\Domain.dll

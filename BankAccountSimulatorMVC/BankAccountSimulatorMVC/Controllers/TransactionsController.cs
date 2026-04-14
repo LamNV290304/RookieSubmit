@@ -1,159 +1,130 @@
-using BankAccountSimulatorMVC.Models;
-using BankAccountSimulatorMVC.Models.ViewModels;
+using Domain.Models;
+using Microsoft.AspNetCore.Mvc;
+using BankAccountSimulatorMVC.ViewModels;
 using BankAccountSimulatorMVC.Services;
 using BankAccountSimulatorMVC.Services.Interface;
-using Microsoft.AspNetCore.Mvc;
 
-namespace BankAccountSimulatorMVC.Controllers
+namespace BankAccountSimulatorMVC.Controllers;
+
+public class TransactionsController(ITransactionService transactionService) : Controller
 {
-	public class TransactionsController : Controller
-	{
-		private readonly ITransactionService _transactionService;
+    private const int DefaultPageSize = 10;
+    private const int MaxPageSize = 100;
 
-		public TransactionsController(ITransactionService transactionService)
-		{
-			_transactionService = transactionService;
-		}
+    [HttpGet]
+    public IActionResult Deposit(string? accountNumber)
+    {
+        return View(new DepositWithdrawViewModel
+        {
+            AccountNumber = accountNumber ?? string.Empty
+        });
+    }
 
-		[HttpGet]
-		public IActionResult Deposit(string? accountNumber)
-		{
-			return View(new DepositWithdrawViewModel
-			{
-				AccountNumber = accountNumber ?? string.Empty
-			});
-		}
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Deposit(DepositWithdrawViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Deposit(DepositWithdrawViewModel model)
-		{
-			if (!ModelState.IsValid) return View(model);
+        var result = await transactionService.DepositAsync(model.AccountNumber, model.Amount);
+        if (!result.Success) return ViewWithModelError(model, result.Message, "Deposit failed.");
 
-			try
-			{
-				var result = await _transactionService.DepositAsync(model.AccountNumber, model.Amount);
-				if (!result.Success)
-				{
-					ModelState.AddModelError(string.Empty, result.Message ?? "Deposit failed.");
-					return View(model);
-				}
+        TempData["SuccessMessage"] = result.Message;
+        return RedirectToAccountDetails(model.AccountNumber);
+    }
 
-				TempData["SuccessMessage"] = result.Message;
-				return RedirectToAction("Details", "Accounts", new { accountNumber = model.AccountNumber });
-			}
-			catch (DataStoreException)
-			{
-				ModelState.AddModelError(string.Empty, "Cannot process deposit right now. Please try again later.");
-				return View(model);
-			}
-		}
+    [HttpGet]
+    public IActionResult Withdraw(string? accountNumber)
+    {
+        return View(new DepositWithdrawViewModel
+        {
+            AccountNumber = accountNumber ?? string.Empty
+        });
+    }
 
-		[HttpGet]
-		public IActionResult Withdraw(string? accountNumber)
-		{
-			return View(new DepositWithdrawViewModel
-			{
-				AccountNumber = accountNumber ?? string.Empty
-			});
-		}
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Withdraw(DepositWithdrawViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Withdraw(DepositWithdrawViewModel model)
-		{
-			if (!ModelState.IsValid) return View(model);
+        var result = await transactionService.WithdrawAsync(model.AccountNumber, model.Amount);
+        if (!result.Success) return ViewWithModelError(model, result.Message, "Withdrawal failed.");
 
-			try
-			{
-				var result = await _transactionService.WithdrawAsync(model.AccountNumber, model.Amount);
-				if (!result.Success)
-				{
-					ModelState.AddModelError(string.Empty, result.Message ?? "Withdrawal failed.");
-					return View(model);
-				}
+        TempData["SuccessMessage"] = result.Message;
+        return RedirectToAccountDetails(model.AccountNumber);
+    }
 
-				TempData["SuccessMessage"] = result.Message;
-				return RedirectToAction("Details", "Accounts", new { accountNumber = model.AccountNumber });
-			}
-			catch (DataStoreException)
-			{
-				ModelState.AddModelError(string.Empty, "Cannot process withdrawal right now. Please try again later.");
-				return View(model);
-			}
-		}
+    [HttpGet]
+    public IActionResult Transfer(string? sourceAccountNumber)
+    {
+        return View(new TransferViewModel
+        {
+            SourceAccountNumber = sourceAccountNumber ?? string.Empty
+        });
+    }
 
-		[HttpGet]
-		public IActionResult Transfer(string? sourceAccountNumber)
-		{
-			return View(new TransferViewModel
-			{
-				SourceAccountNumber = sourceAccountNumber ?? string.Empty
-			});
-		}
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Transfer(TransferViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Transfer(TransferViewModel model)
-		{
-			if (!ModelState.IsValid) return View(model);
+        var result = await transactionService.TransferAsync(model.SourceAccountNumber, model.DestinationAccountNumber, model.Amount);
+        if (!result.Success) return ViewWithModelError(model, result.Message, "Transfer failed.");
 
-			try
-			{
-				var result = await _transactionService.TransferAsync(
-					model.SourceAccountNumber,
-					model.DestinationAccountNumber,
-					model.Amount);
+        TempData["SuccessMessage"] = result.Message;
+        return RedirectToAccountDetails(model.SourceAccountNumber);
+    }
 
-				if (!result.Success)
-				{
-					ModelState.AddModelError(string.Empty, result.Message ?? "Transfer failed.");
-					return View(model);
-				}
+    [HttpGet]
+    public async Task<IActionResult> History(
+        string? accountNumber,
+        TransactionFilter filter = TransactionFilter.All,
+        int page = 1,
+        int pageSize = DefaultPageSize)
+    {
+        var filterType = filter switch
+        {
+            TransactionFilter.Deposits => TransactionType.Deposit,
+            TransactionFilter.Withdrawals => TransactionType.Withdraw,
+            TransactionFilter.Transfers => TransactionType.Transfer,
+            _ => (TransactionType?)null
+        };
 
-				TempData["SuccessMessage"] = result.Message;
-				return RedirectToAction("Details", "Accounts", new { accountNumber = model.SourceAccountNumber });
-			}
-			catch (DataStoreException)
-			{
-				ModelState.AddModelError(string.Empty, "Cannot process transfer right now. Please try again later.");
-				return View(model);
-			}
-		}
+        var normalizedPageSize = pageSize <= 0 ? DefaultPageSize : Math.Min(pageSize, MaxPageSize);
 
-		[HttpGet]
-		public async Task<IActionResult> History(string? accountNumber, TransactionFilter filter = TransactionFilter.All)
-		{
-			try
-			{
-				var filterType = filter switch
-				{
-					TransactionFilter.Deposits => TransactionType.Deposit,
-					TransactionFilter.Withdrawals => TransactionType.Withdraw,
-					TransactionFilter.Transfers => TransactionType.Transfer,
-					_ => (TransactionType?)null
-				};
+        var transactions = await transactionService.GetHistoryAsync(accountNumber, filterType);
+        var totalItems = transactions.Count;
+        var totalPages = totalItems <= 0 ? 1 : (int)Math.Ceiling(totalItems / (double)normalizedPageSize);
+        var normalizedPage = page <= 0 ? 1 : Math.Min(page, totalPages);
 
-				var transactions = await _transactionService.GetHistoryAsync(accountNumber, filterType);
-				var viewModel = new TransactionHistoryViewModel
-				{
-					AccountNumber = accountNumber,
-					Filter = filter,
-					Transactions = transactions
-				};
+        var pagedTransactions = transactions
+            .Skip((normalizedPage - 1) * normalizedPageSize)
+            .Take(normalizedPageSize)
+            .ToList();
 
-				return View(viewModel);
-			}
-			catch (DataStoreException)
-			{
-				TempData["ErrorMessage"] = "Cannot read transaction history right now. Please try again later.";
-				return View(new TransactionHistoryViewModel
-				{
-					AccountNumber = accountNumber,
-					Filter = filter,
-					Transactions = new List<Transaction>()
-				});
-			}
-		}
-	}
+        var viewModel = new TransactionHistoryViewModel
+        {
+            AccountNumber = accountNumber,
+            Filter = filter,
+            Transactions = pagedTransactions,
+            CurrentPage = normalizedPage,
+            PageSize = normalizedPageSize,
+            TotalItems = totalItems
+        };
+
+        return View(viewModel);
+    }
+
+    private IActionResult RedirectToAccountDetails(string accountNumber)
+    {
+        return RedirectToAction("Details", "Accounts", new { accountNumber });
+    }
+
+    private IActionResult ViewWithModelError<TModel>(TModel model, string? message, string fallbackMessage)
+    {
+        ModelState.AddModelError(string.Empty, message ?? fallbackMessage);
+        return View(model);
+    }
 }

@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
+	  
+	  
+  </ItemGroup>
+
+  <ItemGroup>
+	<Compile Include="..\BankAccountSimulatorMVC\Interfaces\IBankAccountRepository.cs" Link="Repositories\Interfaces\IBankAccountRepository.cs" />
+	<Compile Include="..\BankAccountSimulatorMVC\Interfaces\ITransactionRepository.cs" Link="Repositories\Interfaces\ITransactionRepository.cs" />
+	<Compile Include="..\BankAccountSimulatorMVC\Interfaces\IUnitOfWork.cs" Link="UnitOfWork\IUnitOfWork.cs" />
+  </ItemGroup>
+
+</Project>
