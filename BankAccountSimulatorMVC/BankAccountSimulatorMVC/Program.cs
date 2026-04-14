@@ -24,6 +24,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IBankAccountService, BankAccountService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IMonthlyInterestService, MonthlyInterestService>();
+builder.Services.AddHostedService<MonthlyInterestBackgroundService>();
 
 var app = builder.Build();
 

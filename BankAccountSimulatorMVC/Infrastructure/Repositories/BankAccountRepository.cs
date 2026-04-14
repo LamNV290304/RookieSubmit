@@ -15,6 +15,14 @@ public class BankAccountRepository(BankDbContext dbContext) : IBankAccountReposi
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<BankAccount>> GetActiveForUpdateAsync(CancellationToken cancellationToken = default)
+    {
+        return await dbContext.BankAccounts
+            .Where(x => x.Status == AccountStatus.Active)
+            .OrderBy(x => x.AccountNumber)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<BankAccount?> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default)
     {
         return await dbContext.BankAccounts

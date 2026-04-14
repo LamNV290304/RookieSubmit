@@ -8,7 +8,7 @@ namespace BankAccountSimulatorMVC.Controllers;
 
 public class AccountsController(IBankAccountService bankAccountService) : Controller
 {
-    private const int DefaultPageSize = 10;
+    private const int DefaultPageSize = 7;
     private const int MaxPageSize = 100;
 
     [HttpGet]

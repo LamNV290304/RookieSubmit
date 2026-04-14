@@ -7,7 +7,7 @@ public class AccountsIndexViewModel
     public IReadOnlyList<BankAccount> Accounts { get; set; } = new List<BankAccount>();
 
     public int CurrentPage { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
+    public int PageSize { get; set; } = 7;
     public int TotalItems { get; set; }
 
     public int TotalPages => TotalItems <= 0

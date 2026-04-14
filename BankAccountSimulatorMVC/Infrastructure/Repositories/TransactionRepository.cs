@@ -12,6 +12,22 @@ public class TransactionRepository(BankDbContext dbContext) : ITransactionReposi
         await dbContext.Transactions.AddAsync(transaction, cancellationToken);
     }
 
+    public async Task<bool> HasMonthlyInterestAppliedAsync(string accountNumber, int year, int month, CancellationToken cancellationToken = default)
+    {
+        var start = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var end = start.AddMonths(1);
+
+        return await dbContext.Transactions
+            .AsNoTracking()
+            .AnyAsync(
+                t => t.AccountNumber == accountNumber
+                     && t.Type == TransactionType.Deposit
+                     && t.CreatedAt >= start
+                     && t.CreatedAt < end
+                     && EF.Functions.Like(t.Description, "Monthly interest%"),
+                cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Transaction>> GetHistoryAsync(string? accountNumber, TransactionType? filterType, CancellationToken cancellationToken = default)
     {
         var query = dbContext.Transactions.AsNoTracking().AsQueryable();

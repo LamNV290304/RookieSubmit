@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Infrastructure\\Infrastructure.csproj": {}
+    "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Infrastructure\\Infrastructure.csproj": {}
   },
   "projects": {
-    "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Domain\\Domain.csproj": {
+    "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Domain\\Domain.csproj",
+        "projectUniqueName": "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Domain\\Domain.csproj",
+        "projectPath": "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\Gigabyte\\.nuget\\packages\\",
-        "outputPath": "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Domain\\obj\\",
+        "outputPath": "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -343,14 +343,14 @@
         }
       }
     },
-    "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Infrastructure\\Infrastructure.csproj": {
+    "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Infrastructure\\Infrastructure.csproj",
+        "projectUniqueName": "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Infrastructure\\Infrastructure.csproj",
         "projectName": "Infrastructure",
-        "projectPath": "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Infrastructure\\Infrastructure.csproj",
+        "projectPath": "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Infrastructure\\Infrastructure.csproj",
         "packagesPath": "C:\\Users\\Gigabyte\\.nuget\\packages\\",
-        "outputPath": "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Infrastructure\\obj\\",
+        "outputPath": "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -371,8 +371,8 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Domain\\Domain.csproj": {
-                "projectPath": "D:\\Dotnet Project\\BankAccountSimulatorMVC\\Domain\\Domain.csproj"
+              "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Domain\\Domain.csproj": {
+                "projectPath": "D:\\Dotnet Project\\RookieSubmit\\BankAccountSimulatorMVC\\Domain\\Domain.csproj"
               }
             }
           }
