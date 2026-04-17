@@ -52,4 +52,10 @@ public class MonthlyInterestBackgroundService(
 
         return nextRun - utcNow;
     }
+
+    public Task InvokeRunMonthlyInterestAsync(CancellationToken ct = default)
+    => RunMonthlyInterestAsync(ct);
+
+    internal static TimeSpan InvokeGetDelayUntilNextRun(DateTime utcNow)
+        => GetDelayUntilNextRun(utcNow);
 }
